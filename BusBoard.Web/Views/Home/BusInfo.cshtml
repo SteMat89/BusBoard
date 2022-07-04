@@ -1,0 +1,44 @@
+﻿@model BusBoard.Web.ViewModels.BusInfo
+@{
+  ViewBag.Title = "Bus Information";
+}
+
+<style>
+
+.bottomBorder {
+ border-radius: 20px;
+ padding: 1rem;
+  background-color: lightcyan;    
+  text-align: left;
+}
+
+.station {
+    border: 2px solid powderblue;
+    border-radius: 20px;
+    background-color: #bce8f1;
+    padding: 20px;
+    font-size: medium;
+    display: inline-block;
+    margin: 1rem;
+}
+</style>
+
+<h1><meta http-equiv="refresh" content="30" />BusInfo</h1>
+
+<div class="bottomBorder">
+    
+    @foreach (var station in @Model.Stations)
+        {
+            <h2 style="padding-left: 10px">@station.CommonName</h2>
+            <p style="padding-left: 10px; font-size: medium"><strong>Distance:</strong> @station.Distance meters</p>
+            foreach (var bus in @station.NextFiveBuses)
+            {
+                <div class="station">
+                    <p><img src="https://cdn.pixabay.com/photo/2013/07/13/13/16/bus-lane-160716_960_720.png"
+                            width="40" height="40"><strong>Line: </strong>@bus.LineId</p>
+                    <p><strong>Arrives in: </strong> @bus.TimeToStation seconds</p>
+                </div>
+            }
+        }
+    
+</div>

@@ -1,0 +1,16 @@
+﻿.bottomBorder {
+    border-radius: 20px;
+    padding: 1rem;
+    background-color: lightcyan;
+    text-align: left;
+}
+
+.station {
+    border: 2px solid powderblue;
+    border-radius: 20px;
+    background-color: #bce8f1;
+    padding: 20px;
+    font-size: medium;
+    display: inline-block;
+    margin: 1rem;
+}
