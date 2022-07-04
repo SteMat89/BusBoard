@@ -27,15 +27,20 @@ namespace BusBoard.Api
       var stopPoints = JsonConvert.DeserializeObject<List<StopPoint>>(stringJson);
       return stopPoints;
     }
+    public static string ConstructRequestForTheNextFiveBuses(string stationCode)
+    {
+      string  requestString = "StopPoint/";
+      requestString += stationCode;
+      requestString += "/Arrivals";
 
+      return requestString;
+    }
     public static List<StopPoint> GetNextFiveBuses(string stationCode)
     {
       var client = new RestClient("https://api.tfl.gov.uk");
-      string  requestString = "StopPoint/";
       List<StopPoint> nextFiveBuses = new List<StopPoint>();
-      
-      requestString += stationCode;
-      requestString += "/Arrivals";
+
+      string requestString = ConstructRequestForTheNextFiveBuses(stationCode);
       
       var request = new RestRequest(requestString);
       var response = client.Execute(request);
@@ -87,7 +92,7 @@ namespace BusBoard.Api
                         "Common Name\t"+ station.CommonName);
     }
     
-    public static List<Station> GetNearestStopPoint(Location location)
+    public static List<Station> GetNearestStations(Location location)
     {
       var client = new RestClient("https://api.tfl.gov.uk");
       

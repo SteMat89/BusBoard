@@ -20,7 +20,7 @@ namespace BusBoard.Web.Controllers
       // Then modify the view (in Views/Home/BusInfo.cshtml) to render upcoming buses.
       var info = new BusInfo(selection.Postcode);
       var location = BusAPI.GetLocation(info.PostCode);
-      info.Stations = BusAPI.GetNearestStopPoint(location);
+      info.Stations = BusAPI.GetNearestStations(location);
       
       return View(info);
     }

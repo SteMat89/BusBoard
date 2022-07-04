@@ -19,7 +19,7 @@ namespace BusBoard.ConsoleApp
       string postalCode = Console.ReadLine();
       BusAPI.PrintBusesToConsoleLine(BusAPI.GetNextFiveBuses(stationCode));
       var location = BusAPI.GetLocation(postalCode);
-      BusAPI.GetNearestStopPoint(location);
+      BusAPI.GetNearestStations(location);
     }
   }
 }
