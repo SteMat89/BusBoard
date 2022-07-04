@@ -67,7 +67,7 @@ namespace BusBoard.Api
       return location;
     }
 
-    public static string constructRequestToGetNearestStopPoints(Location location)
+    public static string ConstructRequestToGetNearestStopPoints(Location location)
     {
       string requestString = "StopPoint/";
       StringBuilder sb = new StringBuilder(requestString);
@@ -79,33 +79,41 @@ namespace BusBoard.Api
                 "NaptanOnstreetBusCoachStopPair,NaptanPublicBusCoachTram");
       return sb.ToString();
     }
-    public static void GetNearestStopPoint(Location location)
+
+    public static void PrintStation(Station station)
+    {
+      Console.WriteLine("ID:\t\t" + station.Id+ "\n" +
+                        "Distance\t" + station.Distance +"\n"+
+                        "Common Name\t"+ station.CommonName);
+    }
+    
+    public static List<Station> GetNearestStopPoint(Location location)
     {
       var client = new RestClient("https://api.tfl.gov.uk");
       
-      string rawRequest = constructRequestToGetNearestStopPoints(location);
+      string rawRequest = ConstructRequestToGetNearestStopPoints(location);
       var request = new RestRequest(rawRequest);
       
       var response = client.Execute(request);
       
       var result = JObject.Parse(response.Content);
 
-      List<List<StopPoint>> nearestStations = new List<List<StopPoint>>();
+      List<Station> nearestStations = new List<Station>();
       try
       {
         int at = 0;
         while (nearestStations.Count < 2)
-        { 
-         
-          var id = result["stopPoints"][at]["id"].ToString();
-          var nextFiveBuses = GetNextFiveBuses(id);
+        {
+          string idStation = result["stopPoints"][at]["id"].ToString();
+          var nextFiveBuses = GetNextFiveBuses(idStation);
           if (nextFiveBuses.Count != 0)
           {
-            nearestStations.Add(nextFiveBuses);
-            Console.WriteLine("ID:\t\t" + result["stopPoints"][at]["id"] + "\n" +
-                              "Distance\t" + result["stopPoints"][at]["distance"] +"\n"+
-                              "Common Name\t"+ result["stopPoints"][at]["commonName"]);
-
+            string distance  = result["stopPoints"][at]["distance"].ToString();
+            string commonName = result["stopPoints"][at]["commonName"].ToString();
+            
+            nearestStations.Add(new Station(idStation, distance, commonName, nextFiveBuses));
+            
+            PrintStation(nearestStations[nearestStations.Count - 1]);
             PrintBusesToConsoleLine(nextFiveBuses);
             Console.WriteLine();
           }
@@ -116,9 +124,7 @@ namespace BusBoard.Api
       { 
         Debug.Write("Index not found.");
       }
-     
-
+      return nearestStations;
     }
-
   }
 }

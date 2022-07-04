@@ -3,8 +3,40 @@
   ViewBag.Title = "Bus Information";
 }
 
-<h2>BusInfo</h2>
+<style>
+.topBorder {
+  border: 5px outset red;
+  background-color: lightblue;    
+  text-align: center;
+}
 
-<div class="row">
-    <p>You entered postcode @Model.PostCode</p>
+.bottomBorder {
+border: 8px outset darkblue;
+  background-color: lightblue;    
+  text-align: left;
+}
+</style>
+
+<h1>BusInfo</h1>
+
+<div class="topBorder">
+    <p><strong>You entered postcode:</strong> @Model.PostCode</p>
+    <p><strong>Closest station:</strong> @Model.Stations[0].CommonName Distance: @Model.Stations[0].Distance Id: @Model.Stations[0].Id</p>
+    <p><strong>Second closest station:</strong> @Model.Stations[1].CommonName Distance: @Model.Stations[1].Distance Id: @Model.Stations[1].Id</p>
+    
+</div>
+<div class="bottomBorder">
+    
+    @foreach (var station in @Model.Stations)
+        {
+            <h2>@station.CommonName</h2>
+            <p>Distance: @station.Distance</p>
+            foreach (var bus in @station.NextFiveBuses)
+            {
+                <p>Line: @bus.LineId</p>
+                <p>Arrives in: @bus.TimeToStation seconds</p>
+            }
+            <hr/>
+        }
+    
 </div>
