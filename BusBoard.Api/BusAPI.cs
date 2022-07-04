@@ -14,7 +14,8 @@ namespace BusBoard.Api
 {
   public class BusAPI
   {
-    
+    private static RestClient ClientTfl = new RestClient("https://api.tfl.gov.uk");
+    public static RestClient ClientPostalCode = new RestClient("http://api.postcodes.io/");
     public static void PrintBusesToConsoleLine(List<StopPoint> stopPoints)
     {
       foreach (var line in stopPoints)
@@ -29,21 +30,17 @@ namespace BusBoard.Api
     }
     public static string ConstructRequestForTheNextFiveBuses(string stationCode)
     {
-      string  requestString = "StopPoint/";
-      requestString += stationCode;
-      requestString += "/Arrivals";
-
-      return requestString;
+      return $"StopPoint/{stationCode}/Arrivals";
     }
     public static List<StopPoint> GetNextFiveBuses(string stationCode)
     {
-      var client = new RestClient("https://api.tfl.gov.uk");
       List<StopPoint> nextFiveBuses = new List<StopPoint>();
 
       string requestString = ConstructRequestForTheNextFiveBuses(stationCode);
       
       var request = new RestRequest(requestString);
-      var response = client.Execute(request);
+      
+      var response = ClientTfl.Execute(request);
       
       string stringJson = response.Content;
       
@@ -56,11 +53,10 @@ namespace BusBoard.Api
     
     public static Location GetLocation(string postcode)
     {
-      var client = new RestClient("https://api.postcodes.io");
       string rawRequest = "postcodes/" + postcode;
       
       var request = new RestRequest(rawRequest);
-      var response = client.Execute(request);
+      var response = ClientPostalCode.Execute(request);
       
       var des = JObject.Parse(response.Content);
 
@@ -74,15 +70,8 @@ namespace BusBoard.Api
 
     public static string ConstructRequestToGetNearestStopPoints(Location location)
     {
-      string requestString = "StopPoint/";
-      StringBuilder sb = new StringBuilder(requestString);
-      sb.Append("?lat=");
-      sb.Append(location.Latitude);
-      sb.Append("&lon=");
-      sb.Append(location.Longitude);
-      sb.Append("&stopTypes=NaptanBusCoachStation,NaptanBusWayPoint," +
-                "NaptanOnstreetBusCoachStopPair,NaptanPublicBusCoachTram");
-      return sb.ToString();
+      return $"StopPoint/?lat={location.Latitude}&lon={location.Longitude}&stopTypes=NaptanBusCoachStation,NaptanBusWayPoint," +
+             "NaptanOnstreetBusCoachStopPair,NaptanPublicBusCoachTram";
     }
 
     public static void PrintStation(Station station)
@@ -94,12 +83,16 @@ namespace BusBoard.Api
     
     public static List<Station> GetNearestStations(Location location)
     {
-      var client = new RestClient("https://api.tfl.gov.uk");
+      var stopTypes = "NaptanBusCoachStation," +
+                      "NaptanBusWayPoint," +
+                      "NaptanOnstreetBusCoachStopPair," +
+                      "NaptanPublicBusCoachTram";
       
-      string rawRequest = ConstructRequestToGetNearestStopPoints(location);
-      var request = new RestRequest(rawRequest);
-      
-      var response = client.Execute(request);
+      var request = new RestRequest("StopPoint");
+      request.AddParameter("lat", location.Latitude);
+      request.AddParameter("lon", location.Longitude);
+      request.AddParameter("stopTypes", stopTypes);
+      var response = ClientTfl.Execute(request);
       
       var result = JObject.Parse(response.Content);
 
@@ -107,7 +100,7 @@ namespace BusBoard.Api
       try
       {
         int at = 0;
-        while (nearestStations.Count < 2)
+        foreach (var var in result["stopPoints"])
         {
           string idStation = result["stopPoints"][at]["id"].ToString();
           var nextFiveBuses = GetNextFiveBuses(idStation);
@@ -123,6 +116,10 @@ namespace BusBoard.Api
             Console.WriteLine();
           }
           at++;
+          if (nearestStations.Count == 2)
+          {
+            break;
+          }
         }
       }
       catch (Exception ex)
