@@ -4,39 +4,41 @@
 }
 
 <style>
-.topBorder {
-  border: 5px outset red;
-  background-color: lightblue;    
-  text-align: center;
-}
 
 .bottomBorder {
-border: 8px outset darkblue;
-  background-color: lightblue;    
+ border-radius: 20px;
+ padding: 1rem;
+  background-color: lightcyan;    
   text-align: left;
+}
+
+.station {
+    border: 2px solid powderblue;
+    border-radius: 20px;
+    background-color: #bce8f1;
+    padding: 20px;
+    font-size: medium;
+    display: inline-block;
+    margin: 1rem;
 }
 </style>
 
-<h1>BusInfo</h1>
+<h1><meta http-equiv="refresh" content="30" />BusInfo</h1>
 
-<div class="topBorder">
-    <p><strong>You entered postcode:</strong> @Model.PostCode</p>
-    <p><strong>Closest station:</strong> @Model.Stations[0].CommonName Distance: @Model.Stations[0].Distance Id: @Model.Stations[0].Id</p>
-    <p><strong>Second closest station:</strong> @Model.Stations[1].CommonName Distance: @Model.Stations[1].Distance Id: @Model.Stations[1].Id</p>
-    
-</div>
 <div class="bottomBorder">
     
     @foreach (var station in @Model.Stations)
         {
-            <h2>@station.CommonName</h2>
-            <p>Distance: @station.Distance</p>
+            <h2 style="padding-left: 10px">@station.CommonName</h2>
+            <p style="padding-left: 10px; font-size: medium"><strong>Distance:</strong> @station.Distance meters</p>
             foreach (var bus in @station.NextFiveBuses)
             {
-                <p>Line: @bus.LineId</p>
-                <p>Arrives in: @bus.TimeToStation seconds</p>
+                <div class="station">
+                    <p><img src="https://cdn.pixabay.com/photo/2013/07/13/13/16/bus-lane-160716_960_720.png"
+                            width="40" height="40"></img> <strong>Line: </strong>@bus.LineId</p>
+                    <p><strong>Arrives in: </strong> @bus.TimeToStation seconds</p>
+                </div>
             }
-            <hr/>
         }
     
 </div>

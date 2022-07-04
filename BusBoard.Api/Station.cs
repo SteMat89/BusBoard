@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace BusBoard.Api
 {
@@ -13,7 +14,7 @@ namespace BusBoard.Api
         public Station(string id, string distance, string commonName, List<StopPoint> nextFiveBuses)
         {
             this.Id = id;
-            this.Distance = distance;
+            this.Distance = Math.Round(Convert.ToDouble(distance)).ToString();
             this.CommonName = commonName;
             this.NextFiveBuses = nextFiveBuses;
         }
